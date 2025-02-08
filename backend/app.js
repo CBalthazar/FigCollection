@@ -3,6 +3,7 @@ import userRoutes from "./routes/user.routes.js";
 import armyRoutes from "./routes/army.routes.js";
 import figurineRoutes from "./routes/figurine.routes.js";
 import gameRoutes from "./routes/game.routes.js";
+import squadRoutes from "./routes/squad.routes.js";
 const app = express();
 const PORT = 3000;
 
@@ -20,6 +21,8 @@ app.use("/users", userRoutes);
 app.use("/armies", armyRoutes);
 app.use("/figurines", figurineRoutes);
 app.use("/games", gameRoutes);
+app.use("/squads", squadRoutes);
+
 app.use((err, req, res, next) => {
   console.error("completely unexpected issue : \n" + err);
   res.status(500).json({ message: "server got messed up big time" });
