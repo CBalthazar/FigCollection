@@ -5,21 +5,26 @@ class UsersRepository {
     this.prisma = new PrismaClient();
   }
 
-  async getUser(id) {
-    try {
-      return await this.prisma.users.findUnique({ where: { id: id } });
-    } catch (err) {
-      console.error("error in repository getUser :\n" + err);
-    }
+  getUser(id) {
+    return this.prisma.users.findUnique({ where: { id: id } });
   }
 
-  async createUser(body) {
-    try {
-      body.id = Math.ceil(Math.random() * 10000);
-      return await this.prisma.users.create(body);
-    } catch (err) {
-      console.error("error while creating user :\n" + err);
-    }
+  createUser(body) {
+    body.id = Math.ceil(Math.random() * 10000);
+    return this.prisma.users.create({ data: body });
+  }
+
+  modifyUser(id, body) {
+    return this.prisma.users.update({
+      where: { id: id },
+      data: body,
+    });
+  }
+
+  deleteUser(id) {
+    return this.prisma.users.delete({
+      where: { id: id },
+    });
   }
 }
 
