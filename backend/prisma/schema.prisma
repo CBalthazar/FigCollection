@@ -1,0 +1,93 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DB_URL")
+}
+
+model armies {
+  id                  Int                   @id
+  name                String?               @db.VarChar(50)
+  max_cost            Int?
+  id_user             Int?
+  id_game             Int?
+  users               users?                @relation(fields: [id_user], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "armies_ibfk_1")
+  games               games?                @relation(fields: [id_game], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "armies_ibfk_2")
+  it_armies_squads    it_armies_squads[]
+  it_figurines_armies it_figurines_armies[]
+
+  @@index([id_game], map: "id_game")
+  @@index([id_user], map: "id_user")
+}
+
+model figurines {
+  id                  Int                   @id
+  name                String?               @db.VarChar(50)
+  hp                  Decimal?              @db.Decimal(3, 1)
+  damage              String?               @db.VarChar(50)
+  mouvement           String?               @db.VarChar(50)
+  army_cost           Decimal?              @db.Decimal(3, 1)
+  id_user             Int?
+  id_game             Int?
+  id_squad            Int?
+  users               users?                @relation(fields: [id_user], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "figurines_ibfk_1")
+  games               games?                @relation(fields: [id_game], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "figurines_ibfk_2")
+  squads              squads?               @relation(fields: [id_squad], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "figurines_ibfk_3")
+  it_figurines_armies it_figurines_armies[]
+
+  @@index([id_game], map: "id_game")
+  @@index([id_squad], map: "id_squad")
+  @@index([id_user], map: "id_user")
+}
+
+model games {
+  id          Int         @id
+  name        String?     @db.VarChar(50)
+  description String?     @db.VarChar(50)
+  rules       String?     @db.VarChar(50)
+  id_user     Int?
+  armies      armies[]
+  figurines   figurines[]
+  users       users?      @relation(fields: [id_user], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "games_ibfk_1")
+
+  @@index([id_user], map: "id_user")
+}
+
+model it_armies_squads {
+  id_army  Int
+  id_squad Int
+  armies   armies @relation(fields: [id_army], references: [id], onUpdate: Restrict, map: "it_armies_squads_ibfk_1")
+  squads   squads @relation(fields: [id_squad], references: [id], onUpdate: Restrict, map: "it_armies_squads_ibfk_2")
+
+  @@id([id_army, id_squad])
+  @@index([id_squad], map: "id_squad")
+}
+
+model it_figurines_armies {
+  id_army     Int
+  id_figurine Int
+  armies      armies    @relation(fields: [id_army], references: [id], onUpdate: Restrict, map: "it_figurines_armies_ibfk_1")
+  figurines   figurines @relation(fields: [id_figurine], references: [id], onUpdate: Restrict, map: "it_figurines_armies_ibfk_2")
+
+  @@id([id_figurine, id_army])
+  @@index([id_army], map: "id_army")
+}
+
+model squads {
+  id               Int                @id
+  name             String?            @db.VarChar(50)
+  army_cost        Decimal?           @db.Decimal(4, 1)
+  figurines        figurines[]
+  it_armies_squads it_armies_squads[]
+}
+
+model users {
+  id        Int         @id
+  nickname  String?     @db.VarChar(32)
+  password  String?     @db.VarChar(32)
+  armies    armies[]
+  figurines figurines[]
+  games     games[]
+}
